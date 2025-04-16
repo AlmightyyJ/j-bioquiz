@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Biology Quiz – Molecular Genetics</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dbeafe, #f0f9ff);
+      color: #111827;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .quiz-container {
+      width: 90%;
+      max-width: 700px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    .question {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .answers {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .answer {
+      background: #e5e7eb;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .answer.correct {
+      background-color: #86efac;
+    }
+    .answer.incorrect {
+      background-color: #fca5a5;
+    }
+    .feedback {
+      margin-top: 1rem;
+      font-style: italic;
+      display: none;
+    }
+    .next-button, .restart-button {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .score-container {
+      text-align: center;
+      display: none;
+    }
+    .score {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div id="quiz"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-button" onclick="nextQuestion()">Next</button>
+    <div class="score-container" id="scoreContainer">
+      <div class="score" id="score"></div>
+      <button class="restart-button" onclick="restartQuiz()">Restart</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the start codon in mRNA translation?",
+        answers: ["UAA", "AUG", "GGA", "UAG"],
+        correct: 1
+      },
+      {
+        question: "Which enzyme synthesizes RNA from DNA?",
+        answers: ["DNA Polymerase", "RNA Polymerase", "Ligase", "Helicase"],
+        correct: 1
+      },
+      {
+        question: "What is removed during mRNA splicing?",
+        answers: ["Exons", "Promoters", "Introns", "Caps"],
+        correct: 2
+      },
+      {
+        question: "Where does transcription occur in eukaryotic cells?",
+        answers: ["Cytoplasm", "Golgi body", "Nucleus", "Ribosome"],
+        correct: 2
+      },
+      {
+        question: "What type of gene regulation involves the lac operon?",
+        answers: ["Repression", "Enhancement", "Inducible", "Alternative Splicing"],
+        correct: 2
+      },
+      {
+        question: "Which of these enzymes charges tRNA with amino acids?",
+        answers: ["tRNA synthetase", "Ligase", "Peptidase", "DNA Polymerase"],
+        correct: 0
+      },
+      {
+        question: "What sequence indicates the beginning of transcription?",
+        answers: ["Stop Codon", "Promoter", "Enhancer", "Exon"],
+        correct: 1
+      },
+      {
+        question: "Which of the following is a stop codon?",
+        answers: ["AUG", "UAA", "CAA", "GGG"],
+        correct: 1
+      },
+      {
+        question: "Which molecule is directly responsible for translation?",
+        answers: ["RNA Polymerase", "tRNA", "DNA Polymerase", "Helicase"],
+        correct: 1
+      },
+      {
+        question: "What modification is added to the 3’ end of eukaryotic mRNA?",
+        answers: ["5’ cap", "Poly-A tail", "Exon", "tRNA"],
+        correct: 1
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function displayQuestion() {
+      const quizDiv = document.getElementById("quiz");
+      const feedback = document.getElementById("feedback");
+      feedback.style.display = 'none';
+      const q = questions[currentQuestion];
+      let html = `<div class='question'>${q.question}</div><div class='answers'>`;
+      q.answers.forEach((ans, idx) => {
+        html += `<div class='answer' onclick='checkAnswer(${idx}, this)'>${ans}</div>`;
+      });
+      html += `</div>`;
+      quizDiv.innerHTML = html;
+    }
+
+    function checkAnswer(selectedIndex, element) {
+      const q = questions[currentQuestion];
+      const answers = document.querySelectorAll(".answer");
+      answers.forEach((ans, idx) => {
+        ans.classList.remove("correct", "incorrect");
+        if (idx === q.correct) ans.classList.add("correct");
+        else ans.classList.add("incorrect");
+        ans.onclick = null;
+      });
+      const feedback = document.getElementById("feedback");
+      feedback.innerText = selectedIndex === q.correct ? "✅ Correct!" : `❌ Incorrect. The correct answer is: ${q.answers[q.correct]}`;
+      feedback.style.display = 'block';
+      if (selectedIndex === q.correct) score++;
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        displayQuestion();
+      } else {
+        showScore();
+      }
+    }
+
+    function showScore() {
+      document.getElementById("quiz").style.display = 'none';
+      document.querySelector(".next-button").style.display = 'none';
+      const scoreDiv = document.getElementById("scoreContainer");
+      scoreDiv.style.display = 'block';
+      document.getElementById("score").innerText = `🎉 Your Score: ${score}/${questions.length}`;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById("quiz").style.display = 'block';
+      document.querySelector(".next-button").style.display = 'inline-block';
+      document.getElementById("scoreContainer").style.display = 'none';
+      displayQuestion();
+    }
+
+    displayQuestion();
+  </script>
+</body>
+</html>
